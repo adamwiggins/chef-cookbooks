@@ -1,0 +1,19 @@
+port <%= @port %>
+daemonize yes
+databases 16
+
+dir ./
+dbfilename dump.rdb
+pidfile /var/run/redis.pid
+logfile <%= @logfile %>
+
+timeout 300
+
+save 900 1
+save 300 10
+save 60 10000
+
+glueoutputbuf yes
+
+shareobjects no
+shareobjectspoolsize 1024
