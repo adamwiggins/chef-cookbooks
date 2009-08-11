@@ -3,13 +3,24 @@
 # Recipe:: default
 #
 
-template "/usr/local/redis/redis.conf" do
+template "/etc/redis.conf" do
+  require 'sha1'
+  password = SHA1::sha1("#{Time.now.to_f} #{rand} #{object_id}").to_s.slice(0, 20)
+  port = 6379
+
+  name = 'Redis'
+  url = "redis://:#{password}@localhost:#{port}/0"
+  File.open('/root/resources', 'a') do |f|
+    f.puts "#{name}: #{url}"
+  end
+
   owner 'root'
   group 'root'
   mode 0644
   source 'redis.conf.erb'
-  variables(:port => 6379, :logfile => '/var/log/redis.log')
+  variables(:port => port, :password => password, :logfile => '/var/log/redis.log')
 end
+
 
 bash "install_redis" do
   user "root"
@@ -29,7 +40,7 @@ bash "start_redis" do
   user "root"
   cwd "/usr/local/redis"
   code <<-EOBASH
-    ./redis-server redis.conf
+    ./redis-server /etc/redis.conf
   EOBASH
   not_if "netstat -lptn | grep :6379"
 end

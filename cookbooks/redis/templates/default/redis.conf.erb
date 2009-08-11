@@ -1,6 +1,7 @@
 port <%= @port %>
 daemonize yes
 databases 16
+requirepass <%= @password %>
 
 dir ./
 dbfilename dump.rdb
